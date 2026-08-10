@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PortfolioEngine.Application/PortfolioEngine.Application.csproj" />
+    <Project Path="src/PortfolioEngine.Domain/PortfolioEngine.Domain.csproj" />
+    <Project Path="src/PortfolioEngine.Infrastructure/PortfolioEngine.Infrastructure.csproj" />
+    <Project Path="src/PortfolioEngine.Web/PortfolioEngine.Web.csproj" />
+  </Folder>
+</Solution>

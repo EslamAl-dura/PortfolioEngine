@@ -1,0 +1,74 @@
+﻿@model ContactViewModel
+
+<!-- Modal Header -->
+<div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+        @((Model?.Id ?? Guid.Empty) != Guid.Empty ? "Edit Contact" : "Add Contact")
+    </h3>
+    <button type="button"
+            onclick="closeModal()"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors">
+        <i class="bi bi-x-lg text-lg"></i>
+    </button>
+</div>
+
+<!-- Modal Form -->
+<form action="@Url.Action((Model?.Id ?? Guid.Empty) != Guid.Empty ? "Edit" : "Create", "Contact")" method="post" onsubmit="return submitForm(this)" class="mt-4 space-y-4">
+    @Html.AntiForgeryToken()
+    @if ((Model?.Id ?? Guid.Empty) != Guid.Empty)
+    {
+        <input type="hidden" asp-for="Id" />
+    }
+
+    <div>
+        <label asp-for="Name" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"></label>
+        <input asp-for="Name"
+               placeholder="e.g. GitHub"
+               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" />
+        <span asp-validation-for="Name" class="mt-1 block text-xs font-medium text-red-600 dark:text-red-400"></span>
+    </div>
+
+    <div>
+        <label asp-for="Value" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"></label>
+        <input asp-for="Value"
+               placeholder="e.g. https://github.com/username"
+               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" />
+        <span asp-validation-for="Value" class="mt-1 block text-xs font-medium text-red-600 dark:text-red-400"></span>
+    </div>
+
+    <div>
+        <label asp-for="ContactType" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"></label>
+        <select asp-for="ContactType"
+                asp-items="ViewBag.ContactTypes"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2.5 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:ring-blue-500"></select>
+        <span asp-validation-for="ContactType" class="mt-1 block text-xs font-medium text-red-600 dark:text-red-400"></span>
+    </div>
+
+    <div>
+        <label asp-for="IconClass" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"></label>
+        <input asp-for="IconClass"
+               placeholder="e.g. bi bi-github"
+               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" />
+        <span asp-validation-for="IconClass" class="mt-1 block text-xs font-medium text-red-600 dark:text-red-400"></span>
+    </div>
+
+    <div>
+        <label asp-for="Description" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"></label>
+        <textarea asp-for="Description"
+                  rows="2"
+                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"></textarea>
+        <span asp-validation-for="Description" class="mt-1 block text-xs font-medium text-red-600 dark:text-red-400"></span>
+    </div>
+
+    <div class="flex items-center justify-end space-x-2 border-t border-gray-200 dark:border-gray-700 pt-4">
+        <button type="button"
+                onclick="closeModal()"
+                class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+            Cancel
+        </button>
+        <button type="submit"
+                class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 transition-colors">
+            Save
+        </button>
+    </div>
+</form>

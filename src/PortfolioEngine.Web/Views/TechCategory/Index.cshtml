@@ -1,0 +1,152 @@
+﻿@model TechCategoryListViewModel
+
+@{
+    ViewData["Title"] = Model.PageTitle;
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Top Header Bar -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                @Model.PageTitle
+            </h1>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                Managing <span class="font-semibold text-slate-900 dark:text-slate-200">@Model.Categories.Count</span> categories and
+                <span class="font-semibold text-slate-900 dark:text-slate-200">@Model.TotalTechnologies</span> technologies.
+            </p>
+        </div>
+
+        <div>
+            <button onclick="openModal()"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition-all">
+                <i class="bi bi-plus-lg"></i>
+                <span>Add New Category</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    @if (!Model.HasCategories)
+    {
+        <div class="text-center py-16 px-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800">
+            <div class="mx-auto w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-4">
+                <i class="bi bi-folder-x text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">No Categories Found</h3>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                Get started by creating a new technology category for your portfolio.
+            </p>
+            <div class="mt-6">
+                <button onclick="openModal()"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition-all">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Add New Category</span>
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Categories Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            @foreach (var category in Model.Categories)
+            {
+                <div class="group flex flex-col justify-between bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 overflow-hidden">
+
+                    <div>
+                        <!-- Card Header -->
+                        <div class="p-6 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-800/30 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400 text-lg">
+                                    <i class="@category.IconClass"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                        @category.Name
+                                    </h2>
+                                </div>
+                            </div>
+
+                            <!-- Badge -->
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                @category.Type
+                            </span>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="p-6 space-y-4">
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                @category.Description
+                            </p>
+
+                            <div class="pt-2">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                        Technologies
+                                    </span>
+                                    <span class="text-xs font-medium text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
+                                        @category.Technologies.Count
+                                    </span>
+                                </div>
+
+                                @if (!category.Technologies.Any())
+                                {
+                                    <p class="text-xs italic text-slate-400 dark:text-slate-500">
+                                        No technologies assigned to this category.
+                                    </p>
+                                }
+                                else
+                                {
+                                    <div class="flex flex-wrap gap-2">
+                                        @foreach (var tech in category.Technologies)
+                                        {
+                                            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
+                                                 title="@tech.Description">
+                                                @if (!string.IsNullOrWhiteSpace(tech.IconClass))
+                                                {
+                                                    <i class="@tech.IconClass text-blue-500 dark:text-blue-400"></i>
+                                                }
+                                                <span>@tech.Name</span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Footer Actions -->
+                    <div class="px-6 py-4 bg-slate-50/50 dark:bg-slate-800/20 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-end gap-2">
+                        <button type="button"
+                                onclick="openEditModal('@category.Id')"
+                                class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                            <i class="bi bi-pencil mr-1"></i> Edit
+                        </button>
+                        <button type="button"
+                                onclick="openDeleteModal('@category.Id', '@category.Name')"
+                                class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors">
+                            <i class="bi bi-trash mr-1"></i> Delete
+                        </button>
+                    </div>
+
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Create Modal Partial -->
+<partial name="_CreateModal" model="new CreateTechCategoryViewModel()" />
+
+<!-- Edit and Delete Modals -->
+<partial name="_EditAndDeleteModals" />
+
+<!-- Scripts Section -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+   
+    <!-- Custom Category Script -->
+    <script src="~/js/tech-category.js" asp-append-version="true"></script>
+}

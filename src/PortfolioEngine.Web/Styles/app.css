@@ -1,0 +1,13 @@
+﻿@import "tailwindcss";
+
+@source "../Views/**/*.cshtml";
+@source "../Areas/**/*.cshtml";
+
+.req-star::after {
+    content: " *";
+    display: inline-grid;
+    place-content: center;
+    color: red;
+    font-size:1rem;
+    margin : 0 0.2px;
+}

@@ -1,0 +1,57 @@
+###############################################################################
+# Set default behavior to automatically normalize line endings.
+# All text files will have LF line endings in the Git repository.
+###############################################################################
+* text=auto eol=lf
+
+###############################################################################
+# Source Code & Text Files
+# Force LF line endings for C#, Web, and Config files across all OS platforms
+###############################################################################
+*.cs            text eol=lf diff=csharp
+*.csx           text eol=lf diff=csharp
+*.razor         text eol=lf
+*.cshtml        text eol=lf
+*.html          text eol=lf
+*.css           text eol=lf
+*.scss          text eol=lf
+*.js            text eol=lf
+*.jsx           text eol=lf
+*.ts            text eol=lf
+*.tsx           text eol=lf
+*.json          text eol=lf
+*.xml           text eol=lf
+*.config        text eol=lf
+*.md            text eol=lf
+*.gitignore     text eol=lf
+*.gitattributes text eol=lf
+
+###############################################################################
+# Windows / Visual Studio Specific Files
+# Ensure Windows Batch and Powershell scripts retain CRLF if needed
+###############################################################################
+*.sln           text eol=crlf
+*.csproj        text eol=lf
+*.cmd           text eol=crlf
+*.bat           text eol=crlf
+*.ps1           text eol=lf
+
+###############################################################################
+# Binary Files
+# Prevent Git from attempting line-ending normalization on binary assets
+###############################################################################
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.ico           binary
+*.svg           text eol=lf
+*.woff          binary
+*.woff2         binary
+*.ttf           binary
+*.eot           binary
+*.pdf           binary
+*.zip           binary
+*.dll           binary
+*.exe           binary
+*.pdb           binary

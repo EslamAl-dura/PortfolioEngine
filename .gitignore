@@ -1,0 +1,144 @@
+## ==========================================
+## .NET / Visual Studio Base Ignore Rules
+## ==========================================
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Mono auto generated files
+mono_crash.*
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio / VS Code / JetBrains Rider cache & settings
+.vs/
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Visual Studio 2017 auto generated files
+Generated\ Files/
+
+# Test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverage
+*.coveragexml
+
+# Benchmark Results
+BenchmarkDotNet.Artifacts/
+
+# .NET Core & Web Output
+project.lock.json
+project.fragment.lock.json
+artifacts/
+publish/
+*.[Pp]ublish.xml
+*.azurePubxml
+*.pubxml
+*.publishproj
+PublishScripts/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# Database / Local SQLite / Logs
+*.mdf
+*.ldf
+*.ndf
+*.db
+*.db-shm
+*.db-wal
+*.log
+
+# Sensitive Settings & User Secrets
+appsettings.Development.json
+appsettings.Local.json
+appsettings.Secret.json
+*.pfx
+*.publishsettings
+
+# ReSharper / Code Coverage
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+.dotCover/
+.axoCover/
+_NCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+
+
+## ==========================================
+## Web Frontend Tooling (PortfolioEngine.Web)
+## ==========================================
+
+# Node modules & Package locks (if running frontend builds like Tailwind, Vite, etc.)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+
+# Frontend Build Output (Tailwind / Webpack / Vite)
+src/PortfolioEngine.Web/wwwroot/dist/
+src/PortfolioEngine.Web/wwwroot/css/output.css
+.sass-cache/
+.parcel-cache/
+.next/
+.nuxt/
+dist/
+
+# Local Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+
+## ==========================================
+## OS Generated Files
+## ==========================================
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Thumbs.db
+~$*
+*~

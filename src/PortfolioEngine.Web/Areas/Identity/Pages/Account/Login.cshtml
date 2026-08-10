@@ -1,0 +1,107 @@
+@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="flex min-h-[80vh] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md space-y-8">
+
+        <!-- Header / Logo -->
+        <div class="text-center">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400">
+                <i class="bi bi-shield-lock-fill text-3xl"></i>
+            </div>
+            <h2 class="mt-4 text-3xl font-bold tracking-tight text-slate-100">Welcome back</h2>
+            <p class="mt-2 text-sm text-slate-400">Sign in to manage your PortfolioEngine dashboard.</p>
+        </div>
+
+        <!-- Form Card Container -->
+        <div class="rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-2xl backdrop-blur-sm">
+            <form id="account" method="post" class="space-y-6">
+
+                <!-- Model-Level Validation Summary -->
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="ModelOnly" class="rounded-lg border border-rose-500/30 bg-rose-950/40 p-3 text-xs text-rose-300" role="alert"></div>
+                }
+                <!-- Email Input -->
+                <div>
+                    <label asp-for="Input.Email" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">Email Address</label>
+                    <div class="mt-2 relative">
+                        <input asp-for="Input.Email" class="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" autocomplete="username" aria-required="true" placeholder="admin@portfolioengine.local" />
+                    </div>
+                    <span asp-validation-for="Input.Email" class="mt-1 block text-xs text-rose-400"></span>
+                </div>
+
+                <!-- Password Input -->
+                <div>
+                    <div class="flex items-center justify-between">
+                        <label asp-for="Input.Password" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">Password</label>
+                        <a id="forgot-password" asp-page="./ForgotPassword" class="text-xs font-medium text-indigo-400 hover:text-indigo-300 hover:underline">Forgot password?</a>
+                    </div>
+                    <div class="mt-2 relative">
+                        <input asp-for="Input.Password" type="password" class="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" autocomplete="current-password" aria-required="true" placeholder="••••••••" />
+                    </div>
+                    <span asp-validation-for="Input.Password" class="mt-1 block text-xs text-rose-400"></span>
+                </div>
+
+                <!-- Remember Me Checkbox -->
+                <div class="flex items-center justify-between">
+                    <label asp-for="Input.RememberMe" class="flex items-center gap-2.5 text-xs text-slate-400 cursor-pointer">
+                        <input class="h-4 w-4 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-slate-900" asp-for="Input.RememberMe" />
+                        <span>@Html.DisplayNameFor(m => m.Input.RememberMe)</span>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <div>
+                    <button id="login-submit" type="submit" class="flex w-full justify-center items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 active:scale-[0.99]">
+                        <i class="bi bi-box-arrow-in-right text-lg"></i>
+                        <span>Log in to Engine</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- External Logins (If Configured) -->
+            @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+            {
+                <div class="mt-6">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-slate-800"></div>
+                        </div>
+                        <div class="relative flex justify-center text-xs uppercase">
+                            <span class="bg-slate-900 px-2 text-slate-500">Or continue with</span>
+                        </div>
+                    </div>
+
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="mt-6 grid grid-cols-1 gap-3">
+                        @foreach (var provider in Model.ExternalLogins!)
+                        {
+                            <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-medium text-slate-200 transition-colors hover:bg-slate-700" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                <span>@provider.DisplayName</span>
+                            </button>
+                        }
+                    </form>
+                </div>
+            }
+
+            <!-- Bottom Navigation Links -->
+            <div class="mt-6 flex flex-col items-center justify-center gap-2 border-t border-slate-800/80 pt-6 text-xs text-slate-400">
+                <p>
+                    Don't have an account?
+                    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="font-medium text-indigo-400 hover:text-indigo-300 hover:underline">Register as a new user</a>
+                </p>
+                <p>
+                    <a id="resend-confirmation" asp-page="./ResendEmailConfirmation" class="text-slate-500 hover:text-slate-400 hover:underline">Resend email confirmation</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

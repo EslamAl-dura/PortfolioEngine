@@ -1,0 +1,145 @@
+﻿@model IEnumerable<PortfolioEngine.Application.DTOs.TechnologyDto>
+
+@{
+    ViewData["Title"] = "Technologies Management";
+
+    // Group technologies by category name for a clean, organized view
+    var groupedTechnologies = Model.GroupBy(t => t.TechCategoryName);
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- PAGE HEADER & MAIN ACTION BUTTON -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+                <i class="bi bi-cpu text-blue-600 dark:text-blue-500"></i> Technology Stack
+            </h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Manage your technical skills, frameworks, and developer tools.
+            </p>
+        </div>
+
+        <div>
+            <!-- Global "Add Technology" Button -->
+            <button type="button"
+                    onclick="openCreateTechModal()"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-md transition-all duration-150 transform active:scale-95">
+                <i class="bi bi-plus-lg text-lg"></i> Add Technology
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT: GROUPED BY CATEGORY -->
+    @if (!Model.Any())
+    {
+        <!-- Empty State -->
+        <div class="text-center py-16 px-4 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
+            <i class="bi bi-layers text-5xl text-slate-300 dark:text-slate-600 mb-3 block"></i>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200">No Technologies Found</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 mb-6">
+                You haven't added any technologies yet. Get started by clicking the button below.
+            </p>
+            <button type="button"
+                    onclick="openCreateTechModal()"
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-xl shadow-sm">
+                Add Your First Technology
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="space-y-10">
+            @foreach (var group in groupedTechnologies)
+            {
+                <div class="space-y-4">
+                    <!-- Category Title Header -->
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80 pb-2">
+                        <h2 class="text-lg font-bold text-slate-800 dark:text-slate-200 tracking-wide uppercase text-xs flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                            @group.Key
+                            <span class="ml-2 px-2 py-0.5 text-xs font-semibold rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                @group.Count()
+                            </span>
+                        </h2>
+
+                        <!-- Quick Add to this Specific Category -->
+                        @if (group.FirstOrDefault() != null)
+                        {
+                            <button type="button"
+                                    onclick="openCreateTechModal('@group.First().TechCategoryId')"
+                                    class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium flex items-center gap-1">
+                                <i class="bi bi-plus"></i> Add to @group.Key
+                            </button>
+                        }
+                    </div>
+
+                    <!-- Cards Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        @foreach (var tech in group)
+                        {
+                            <div class="group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900/50 transition-all duration-200 flex flex-col justify-between">
+
+                                <div>
+                                    <!-- Header: Icon & Action Buttons -->
+                                    <div class="flex items-start justify-between gap-3 mb-3">
+                                        <div class="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-2xl text-slate-700 dark:text-slate-200 border border-slate-100 dark:border-slate-700/50">
+                                            @if (!string.IsNullOrEmpty(tech.IconClass))
+                                            {
+                                                <i class="@tech.IconClass"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-code-slash"></i>
+                                            }
+                                        </div>
+
+                                        <!-- Edit / Delete Quick Actions -->
+                                        <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                                            <button type="button"
+                                                    onclick="openEditTechModal('@tech.Id')"
+                                                    title="Edit Technology"
+                                                    class="p-1.5 text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 rounded-lg transition-colors">
+                                                <i class="bi bi-pencil-square text-sm"></i>
+                                            </button>
+
+                                            <button type="button"
+                                                    onclick="deleteTechnology('@tech.Id', '@tech.Name')"
+                                                    title="Delete Technology"
+                                                    class="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors">
+                                                <i class="bi bi-trash text-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Content: Name & Description -->
+                                    <h3 class="font-bold text-base text-slate-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                        @tech.Name
+                                    </h3>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed">
+                                        @tech.Description
+                                    </p>
+                                </div>
+
+                                <!-- Footer Badge -->
+                                <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-[11px] text-slate-400">
+                                    <span class="truncate">Category: @tech.TechCategoryName</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- INJECT MODALS PARTIAL -->
+<partial name="_TechModals" model="new TechnologyViewModel()" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <!-- External jQuery Tech Script -->
+    <script src="~/js/technology.js" asp-append-version="true"></script>
+}
