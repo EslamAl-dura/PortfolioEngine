@@ -3,6 +3,13 @@
 @source "../Views/**/*.cshtml";
 @source "../Areas/**/*.cshtml";
 
+body {
+    zoom: 0.8; /* Works in Chrome, Edge, Safari */
+    -moz-transform: scale(0.8); /* Core scaling for Firefox */
+    -moz-transform-origin: top center; /* Prevents alignment shifts in Firefox */
+}
+
+
 .req-star::after {
     content: " *";
     display: inline-grid;
@@ -10,4 +17,17 @@
     color: red;
     font-size:1rem;
     margin : 0 0.2px;
+}
+
+
+/* Custom grid logic to force exactly 5 elements per row */
+.col-2-custom {
+    flex: 0 0 20% !important;
+}
+
+/* Add a nice hover effect to make the selection grid feel interactive */
+.icon-selector-btn:hover {
+    background-color: #e9ecef !important;
+    border-color: #adb5bd !important;
+    color: #212529 !important;
 }
