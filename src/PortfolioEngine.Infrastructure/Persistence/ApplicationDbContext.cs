@@ -27,8 +27,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     /// Gets or sets the DbSet for Contact entities.
     /// </summary>
     public DbSet<Contact> Contacts { get; set; }
-
-
+    /// <summary>
+    /// Gets or sets the DbSet for Skill entities.
+    /// </summary>
+    public DbSet<Skill> Skills { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

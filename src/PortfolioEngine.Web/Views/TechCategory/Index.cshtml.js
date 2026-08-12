@@ -1,16 +1,12 @@
-// JavaScript for tech category Index view
 $(document).ready(function () {
 
-    // --- CACHED SELECTORS ---
-    const $createModal = $('#createCategoryModal');
-    const $createContainer = $('#modalContainer');
-    const $createForm = $('#createCategoryForm');
-    const $createValidation = $('#validationSummary');
+    const DEFAULT_ICON = 'folder';
 
-    const $editModal = $('#editCategoryModal');
-    const $editContainer = $('#editModalContainer');
-    const $editForm = $('#editCategoryForm');
-    const $editValidation = $('#editValidationSummary');
+    // --- CACHED SELECTORS ---
+    const $categoryModal = $('#categoryModal');
+    const $categoryContainer = $('#categoryModalContainer');
+    const $categoryForm = $('#categoryForm');
+    const $categoryValidation = $('#categoryValidationSummary');
 
     const $deleteModal = $('#deleteCategoryModal');
     const $deleteContainer = $('#deleteModalContainer');
@@ -18,22 +14,123 @@ $(document).ready(function () {
 
 
     // ==========================================
-    // 1. CREATE MODAL FUNCTIONS
+    // 1. ICON PICKER FUNCTIONS
     // ==========================================
-    window.openModal = function () {
-        $createModal.removeClass('opacity-0 pointer-events-none');
-        $createContainer.removeClass('scale-95').addClass('scale-100');
+    function selectIcon(key) {
+        let iconKey = key || DEFAULT_ICON;
+        iconKey = iconKey.replace(/^bi\s+bi-/, '').replace(/^bi-/, '');
+
+        $('#category_IconClass').val(iconKey);
+        $('#selectedIconName').text(iconKey);
+        $('#selectedIconPreview').attr('class', 'bi bi-' + iconKey + ' text-sm');
+
+        const activeClasses = 'ring-2 ring-blue-500 border-transparent bg-blue-50 dark:bg-blue-950/40 text-blue-600';
+
+        $('.icon-option-btn').each(function () {
+            const $btn = $(this);
+            if ($btn.attr('data-icon-key') === iconKey) {
+                $btn.addClass(activeClasses);
+            } else {
+                $btn.removeClass(activeClasses);
+            }
+        });
+    }
+
+    function filterIcons() {
+        const query = $('#iconSearchInput').val().toLowerCase();
+
+        $('.icon-option-btn').each(function () {
+            const $btn = $(this);
+            const key = ($btn.attr('data-icon-key') || '').toLowerCase();
+            const label = ($btn.attr('data-icon-label') || '').toLowerCase();
+
+            if (key.includes(query) || label.includes(query)) {
+                $btn.css('display', 'flex');
+            } else {
+                $btn.hide();
+            }
+        });
+    }
+
+    // Grid Event Delegation & Search Input
+    $('#iconGrid').on('click', '.icon-option-btn', function () {
+        const key = $(this).attr('data-icon-key');
+        selectIcon(key);
+    });
+
+    $('#iconSearchInput').on('keyup', filterIcons);
+
+
+    // ==========================================
+    // 2. CATEGORY MODAL (CREATE / EDIT)
+    // ==========================================
+    window.openCreateModal = function () {
+        $categoryForm[0].reset();
+        $('#category_Id').val('');
+        $categoryValidation.addClass('hidden').empty();
+
+        // UI Customization for Create
+        $('#categoryModalTitleText').text('Add New Category');
+        $('#categoryModalIcon').attr('class', 'bi bi-folder-plus text-blue-600');
+        $('#categorySubmitBtn').text('Create Category').attr('class', 'px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm');
+        $categoryForm.attr('action', '/TechCategory/Create');
+
+        // Reset Icon Picker
+        $('#iconSearchInput').val('');
+        filterIcons();
+        selectIcon(DEFAULT_ICON);
+
+        showCategoryModal();
+    };
+    window.openEditModalFromButton = function (button) {
+        const category = {
+            id: button.getAttribute('data-id'),
+            name: button.getAttribute('data-name'),
+            type: parseInt(button.getAttribute('data-type')),
+            iconClass: button.getAttribute('data-icon'),
+            description: button.getAttribute('data-description')
+        };
+
+        // Calls your original modal opening function
+        openEditModal(category);
+    }
+    window.openEditModal = function (category) {
+        $categoryForm[0].reset();
+        $categoryValidation.addClass('hidden').empty();
+
+        // UI Customization for Edit
+        $('#categoryModalTitleText').text('Edit Technology Category');
+        $('#categoryModalIcon').attr('class', 'bi bi-pencil-square text-amber-500');
+        $('#categorySubmitBtn').text('Save Changes').attr('class', 'px-5 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-xl shadow-sm');
+        $categoryForm.attr('action', '/TechCategory/Edit');
+
+        // Populate Form Fields
+        $('#category_Id').val(category.id);
+        $('#category_Name').val(category.name);
+        $('#category_Type').val(category.type);
+        $('#category_Description').val(category.description);
+
+        // Sync Icon Picker
+        $('#iconSearchInput').val('');
+        filterIcons();
+        selectIcon(category.iconClass);
+
+        showCategoryModal();
     };
 
-    window.closeModal = function () {
-        $createModal.addClass('opacity-0 pointer-events-none');
-        $createContainer.removeClass('scale-100').addClass('scale-95');
-        $createForm[0].reset();
-        $createValidation.addClass('hidden').empty();
+    function showCategoryModal() {
+        $categoryModal.removeClass('opacity-0 pointer-events-none');
+        $categoryContainer.removeClass('scale-95').addClass('scale-100');
+    }
+
+    window.closeCategoryModal = function () {
+        $categoryModal.addClass('opacity-0 pointer-events-none');
+        $categoryContainer.removeClass('scale-100').addClass('scale-95');
+        $categoryValidation.addClass('hidden').empty();
     };
 
-    // AJAX Create Submit
-    $createForm.on('submit', function (e) {
+    // Unified AJAX Form Submission
+    $categoryForm.on('submit', function (e) {
         e.preventDefault();
 
         $.ajax({
@@ -44,68 +141,15 @@ $(document).ready(function () {
             processData: false,
             success: function (result) {
                 if (result.success) {
-                    window.closeModal();
+                    window.closeCategoryModal();
                     window.location.reload();
                 } else {
                     const errorHtml = result.errors.map(err => `<div>• ${err}</div>`).join('');
-                    $createValidation.html(errorHtml).removeClass('hidden');
+                    $categoryValidation.html(errorHtml).removeClass('hidden');
                 }
             },
             error: function () {
-                $createValidation.html('<div>• An unexpected error occurred.</div>').removeClass('hidden');
-            }
-        });
-    });
-
-
-    // ==========================================
-    // 2. EDIT MODAL FUNCTIONS
-    // ==========================================
-    window.openEditModal = function (id) {
-        $.ajax({
-            url: `/TechCategory/GetForEdit/${id}`,
-            type: 'GET',
-            success: function (data) {
-                $('#edit_Id').val(data.id);
-                $('#edit_Name').val(data.name);
-                $('#edit_Type').val(data.type);
-                $('#edit_IconClass').val(data.iconClass);
-                $('#edit_Description').val(data.description);
-
-                $editModal.removeClass('opacity-0 pointer-events-none');
-                $editContainer.removeClass('scale-95').addClass('scale-100');
-            },
-            error: function () {
-                alert('Could not fetch category details.');
-            }
-        });
-    };
-
-    window.closeEditModal = function () {
-        $editModal.addClass('opacity-0 pointer-events-none');
-        $editContainer.removeClass('scale-100').addClass('scale-95');
-        $editValidation.addClass('hidden').empty();
-    };
-
-    // AJAX Edit Submit
-    $editForm.on('submit', function (e) {
-        e.preventDefault();
-        const id = $('#edit_Id').val();
-
-        $.ajax({
-            url: `/TechCategory/Edit/${id}`,
-            type: 'POST',
-            data: new FormData(this),
-            contentType: false,
-            processData: false,
-            success: function (result) {
-                if (result.success) {
-                    window.closeEditModal();
-                    window.location.reload();
-                } else {
-                    const errorHtml = result.errors.map(err => `<div>• ${err}</div>`).join('');
-                    $editValidation.html(errorHtml).removeClass('hidden');
-                }
+                $categoryValidation.html('<div>• An unexpected error occurred.</div>').removeClass('hidden');
             }
         });
     });
@@ -127,13 +171,11 @@ $(document).ready(function () {
         $deleteContainer.removeClass('scale-100').addClass('scale-95');
     };
 
-    // AJAX Delete Submit
     $deleteForm.on('submit', function (e) {
         e.preventDefault();
-        const id = $('#delete_Id').val();
 
         $.ajax({
-            url: `/TechCategory/Delete/${id}`,
+            url: `/TechCategory/Delete/${$('#delete_Id').val()}`,
             type: 'POST',
             data: new FormData(this),
             contentType: false,
@@ -151,11 +193,9 @@ $(document).ready(function () {
     // ==========================================
     // 4. GLOBAL EVENTS
     // ==========================================
-    // Close active modal on Escape key
     $(document).on('keydown', function (e) {
         if (e.key === 'Escape') {
-            if (!$createModal.hasClass('opacity-0')) window.closeModal();
-            if (!$editModal.hasClass('opacity-0')) window.closeEditModal();
+            if (!$categoryModal.hasClass('opacity-0')) window.closeCategoryModal();
             if (!$deleteModal.hasClass('opacity-0')) window.closeDeleteModal();
         }
     });
