@@ -21,15 +21,8 @@ public class ContactController : Controller
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         var contacts = await _contactService.GetAllContactsAsync(null,cancellationToken);
-        return View(contacts);
-    }
-
-    // GET: /Contact/Create (Modal Partial)
-    [HttpGet]
-    public IActionResult Create()
-    {
         ViewBag.ContactTypes = GetContactTypeSelectList();
-        return PartialView("_CreateModal", new ContactViewModel());
+        return View(contacts);
     }
 
     // POST: /Contact/Create
@@ -56,35 +49,14 @@ public class ContactController : Controller
         }
     }
 
-    // GET: /Contact/Edit/{id} (Modal Partial)
-    [HttpGet]
-    public async Task<IActionResult> Edit(Guid id, CancellationToken cancellationToken)
-    {
-        var contact = await _contactService.GetContactByIdAsync(id, cancellationToken);
-        if (contact == null || contact.Id == Guid.Empty)
-        {
-            return NotFound();
-        }
-
-        var model = new ContactViewModel
-        {
-            Id = contact.Id,
-            Name = contact.Name,
-            Value = contact.Value,
-            Description = contact.Description,
-            IconClass = contact.IconClass,
-            ContactType = contact.ContactType
-        };
-
-        ViewBag.ContactTypes = GetContactTypeSelectList(contact.ContactType);
-        return PartialView("_EditModal", model);
-    }
-
-    // POST: /Contact/Edit
+    // POST: /Contact/Edit/{id}
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(ContactViewModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> Edit(Guid id, ContactViewModel model, CancellationToken cancellationToken)
     {
+        // Ignore Id validation errors on the model since we take `id` from the route
+        ModelState.Remove(nameof(model.Id));
+
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
@@ -94,7 +66,7 @@ public class ContactController : Controller
         try
         {
             var dto = new UpdateContactDto(model.Name, model.Value, model.Description, model.IconClass, model.ContactType);
-            await _contactService.UpdateContactAsync(model.Id, dto, cancellationToken);
+            await _contactService.UpdateContactAsync(id, dto, cancellationToken);
 
             return Json(new { success = true, message = "Contact updated successfully!" });
         }

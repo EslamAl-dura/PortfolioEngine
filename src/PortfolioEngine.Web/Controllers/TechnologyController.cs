@@ -29,22 +29,6 @@ public class TechnologyController : Controller
         return View(technologies);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetForEdit(Guid id)
-    {
-        var tech = await _technologyService.GetTechnologyByIdAsync(id);
-        if (tech == null) return NotFound();
-
-        return Json(new
-        {
-            id = tech.Id,
-            name = tech.Name,
-            description = tech.Description,
-            iconClass = tech.IconClass,
-            techCategoryId = tech.TechCategoryId
-        });
-    }
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(TechnologyViewModel model)
@@ -62,7 +46,7 @@ public class TechnologyController : Controller
 
             return Json(new { success = true, message = "Technology added successfully!" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return Json(new { success = false, message = "An error occurred while adding the technology." });
         }
@@ -85,7 +69,7 @@ public class TechnologyController : Controller
 
             return Json(new { success = true, message = "Technology updated successfully!" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return Json(new { success = false, message = "An error occurred while updating the technology." });
         }

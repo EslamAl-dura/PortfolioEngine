@@ -43,7 +43,7 @@ public class TechCategoryController : Controller
 
             return Json(new { success = true, message = "Category created successfully!" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Log the exception (you can use a logging framework like Serilog, NLog, etc.)
             // _logger.LogError(ex, "Error creating category");
@@ -51,27 +51,10 @@ public class TechCategoryController : Controller
         }
     }
 
-    // GET: Fetch category details for pre-filling the Edit modal
-    [HttpGet]
-    public async Task<IActionResult> GetForEdit(Guid id)
-    {
-        var category = await _techCategoryService.GetCategoryByIdAsync(id);
-        if (category == null) return NotFound();
-
-        return Json(new
-        {
-            id = category.Id,
-            name = category.Name,
-            type = (int)category.Type,
-            iconClass = category.IconClass,
-            description = category.Description
-        });
-    }
-
     // POST: Update Category
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, CreateTechCategoryViewModel model)
+    public async Task<IActionResult> Edit(Guid id, CreateTechCategoryViewModel model, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
@@ -81,11 +64,11 @@ public class TechCategoryController : Controller
         try
         {
             var dto = new CreateTechCategoryDto(model.Name, model.Description, model.IconClass, model.Type);
-            await _techCategoryService.UpdateCategoryAsync(id, dto); // Ensure Update is in your Service/Interface
+            await _techCategoryService.UpdateCategoryAsync(id, dto, cancellationToken); // Ensure Update is in your Service/Interface
 
             return Json(new { success = true, message = "Category updated successfully!" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Log the exception (you can use a logging framework like Serilog, NLog, etc.)
             // _logger.LogError(ex, "Error updating category");

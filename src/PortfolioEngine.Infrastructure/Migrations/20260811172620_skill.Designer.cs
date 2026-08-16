@@ -13,7 +13,7 @@ namespace PortfolioEngine.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260811172620_skill")]
-    partial class skill
+    partial class Skill
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

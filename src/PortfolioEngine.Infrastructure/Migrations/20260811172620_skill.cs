@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortfolioEngine.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class skill : Migration
+    public partial class Skill : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
