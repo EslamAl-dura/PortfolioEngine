@@ -36,7 +36,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(modelBuilder);
 
-        // One-line extension method call
+        // this apply the soft delete filter generally 
         modelBuilder.ApplySoftDeleteQueryFilter();
+        // this handel the (relationships between tables)
+        modelBuilder.ManagingRelationshipsBetweenTables();
     }
 }

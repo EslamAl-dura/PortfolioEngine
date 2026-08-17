@@ -32,6 +32,10 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        foreach (var entry in _dbContext.ChangeTracker.Entries())
+        {
+            Console.WriteLine($"{entry.Entity.GetType().Name} - {entry.State}");
+        }
         return await _dbContext.SaveChangesAsync(cancellationToken);
     }
 

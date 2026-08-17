@@ -15,6 +15,7 @@ public static class DependencyInjection
         services.AddScoped<ITechCategoryService, TechCategoryService>();
         services.AddScoped<ITechnologyService, TechnologyService>();
         services.AddScoped<IContactService, ContactService>();
+        services.AddScoped<ISkillService, SkillService>();
         return services;
     }
 }

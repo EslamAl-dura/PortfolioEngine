@@ -14,4 +14,6 @@ public class Skill : BaseEntity
     [Range(0, 100)]
     public int Proficiency { get; set; } = 0;
     public bool IsSoftSkill { get; set; } = false;
+
+    public ICollection<Technology> Technologies { get; set; } = new List<Technology>();
 }

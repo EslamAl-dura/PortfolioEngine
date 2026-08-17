@@ -9,16 +9,19 @@ body {
     -moz-transform-origin: top center; /* Prevents alignment shifts in Firefox */
 }
 
-
 .req-star::after {
     content: " *";
     display: inline-grid;
     place-content: center;
     color: red;
-    font-size:1rem;
-    margin : 0 0.2px;
+    font-size: 1rem;
+    margin: 0 0.2px;
 }
 
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #314158
+}
 
 /* Custom grid logic to force exactly 5 elements per row */
 .col-2-custom {

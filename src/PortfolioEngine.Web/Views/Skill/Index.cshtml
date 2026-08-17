@@ -1,0 +1,147 @@
+﻿@using System.Text.Encodings.Web
+@using System.Text.Json
+@using PortfolioEngine.Application.DTOs
+@model IEnumerable<SkillDto>
+
+@{
+    ViewData["Title"] = "Skills Management";
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Top Header Bar -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl flex items-center gap-3">
+                <i class="bi bi-award-fill text-blue-600"></i> Skills & Expertise
+            </h1>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                Manage domain capabilities, proficiency metrics, soft skills, and tech associations.
+            </p>
+        </div>
+
+        <div>
+            <button type="button"
+                    onclick="openCreateSkillModal()"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition-all">
+                <i class="bi bi-plus-lg"></i>
+                <span>Add Skill</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Skill List Table Shell -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+                        <th class="px-6 py-4">Icon</th>
+                        <th class="px-6 py-4">Name</th>
+                        <th class="px-6 py-4">Type</th>
+                        <th class="px-6 py-4">Proficiency</th>
+                        <th class="px-6 py-4">Associated Tech</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-800 text-sm text-slate-700 dark:text-slate-300">
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="bi bi-inbox text-3xl mb-2 text-slate-400"></i>
+                                    <span>No skills found.</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                        <i class="bi bi-@(string.IsNullOrWhiteSpace(item.IconClass) ? "lightning-charge-fill" : item.IconClass.Replace("bi bi-", "").Replace("bi-", ""))"></i>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-slate-900 dark:text-white">@item.Name</div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400 max-w-xs truncate">@item.Description</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if (item.IsSoftSkill)
+                                    {
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                            Soft Skill
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                                            Technical
+                                        </span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-2 w-36">
+                                        <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: @item.Proficiency%"></div>
+                                        </div>
+                                        <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">@item.Proficiency%</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1 max-w-xs">
+                                        @if (item.Technologies != null && item.Technologies.Any())
+                                        {
+                                            @foreach (var tech in item.Technologies)
+                                            {
+                                                <span class="inline-block px-2 py-0.5 text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-md border border-slate-200 dark:border-slate-700">
+                                                    @tech.Name
+                                                </span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-xs text-slate-400 italic">None</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right space-x-1">
+                                    <button type="button"
+                                            class="edit-skill-btn px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900"
+                                            data-id="@item.Id"
+                                            data-name="@item.Name"
+                                            data-description="@item.Description"
+                                            data-icon="@item.IconClass"
+                                            data-proficiency="@item.Proficiency"
+                                            data-soft="@item.IsSoftSkill.ToString().ToLower()"
+                                            data-techs="@JsonSerializer.Serialize(item.Technologies?.Select(t => t.Id) ?? new List<Guid>())">
+                                        <i class="bi bi-pencil mr-1"></i>
+                                    </button>
+
+                                    <button type="button"
+                                            onclick="openDeleteSkillModal('@item.Id', '@JavaScriptEncoder.Default.Encode(item.Name)')"
+                                            class="p-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors">
+                                        <i class="bi bi-trash text-xs"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Unified Modal Partials -->
+<partial name="_SkillModal" />
+<partial name="_DeleteSkillModal" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="../Views/Skill/Index.cshtml.js" asp-append-version="true"></script>
+}

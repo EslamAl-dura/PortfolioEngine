@@ -27,5 +27,12 @@ public class TechMappingProfile : Profile
             
         CreateMap<CreateContactDto, Contact>();
         CreateMap<UpdateContactDto, Contact>();
+
+        // --- Skill Mappings ---
+        CreateMap<Skill, SkillDto>();
+        CreateMap<CreateSkillDto, Skill>()
+            .ForMember(dest => dest.Technologies, opt => opt.Ignore());
+        CreateMap<UpdateSkillDto, Skill>()
+            .ForMember(dest => dest.Technologies, opt => opt.Ignore());
     }
 }

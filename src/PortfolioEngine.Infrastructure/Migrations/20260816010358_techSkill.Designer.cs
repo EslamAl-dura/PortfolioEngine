@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PortfolioEngine.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using PortfolioEngine.Infrastructure.Persistence;
 namespace PortfolioEngine.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260816010358_techSkill")]
+    partial class techSkill
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -419,6 +422,9 @@ namespace PortfolioEngine.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("SkillId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("TechCategoryId")
                         .HasColumnType("uniqueidentifier");
 
@@ -430,24 +436,11 @@ namespace PortfolioEngine.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SkillId");
+
                     b.HasIndex("TechCategoryId");
 
                     b.ToTable("Technologies");
-                });
-
-            modelBuilder.Entity("SkillTechnology", b =>
-                {
-                    b.Property<Guid>("SkillId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TechnologiesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("SkillId", "TechnologiesId");
-
-                    b.HasIndex("TechnologiesId");
-
-                    b.ToTable("SkillTechnologies", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -503,6 +496,10 @@ namespace PortfolioEngine.Infrastructure.Migrations
 
             modelBuilder.Entity("PortfolioEngine.Domain.Entities.Technology", b =>
                 {
+                    b.HasOne("PortfolioEngine.Domain.Entities.Skill", null)
+                        .WithMany("Technologies")
+                        .HasForeignKey("SkillId");
+
                     b.HasOne("PortfolioEngine.Domain.Entities.TechCategory", "TechCategory")
                         .WithMany("Technologies")
                         .HasForeignKey("TechCategoryId")
@@ -512,19 +509,9 @@ namespace PortfolioEngine.Infrastructure.Migrations
                     b.Navigation("TechCategory");
                 });
 
-            modelBuilder.Entity("SkillTechnology", b =>
+            modelBuilder.Entity("PortfolioEngine.Domain.Entities.Skill", b =>
                 {
-                    b.HasOne("PortfolioEngine.Domain.Entities.Skill", null)
-                        .WithMany()
-                        .HasForeignKey("SkillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PortfolioEngine.Domain.Entities.Technology", null)
-                        .WithMany()
-                        .HasForeignKey("TechnologiesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Technologies");
                 });
 
             modelBuilder.Entity("PortfolioEngine.Domain.Entities.TechCategory", b =>

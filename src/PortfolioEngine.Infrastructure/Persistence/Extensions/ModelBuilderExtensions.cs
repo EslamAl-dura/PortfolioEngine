@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PortfolioEngine.Domain.Common;
+using PortfolioEngine.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -36,5 +37,13 @@ public static class ModelBuilderExtensions
                 modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
             }
         }
+    }
+
+    public static void ManagingRelationshipsBetweenTables(this ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Skill>()
+        .HasMany(s => s.Technologies)
+        .WithMany()                                 // no inverse navigation
+        .UsingEntity(j => j.ToTable("SkillTechnologies"));  // optional but recommended
     }
 }

@@ -17,11 +17,6 @@ public class GenericRepository<TEntity, TKey> : IGenericRepository<TEntity, TKey
         _dbSet = _dbContext.Set<TEntity>();
     }
 
-    public async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
-    {
-        return await _dbSet.FindAsync(new object?[] { id }, cancellationToken);
-    }
-
     public async Task<IReadOnlyList<TEntity>> GetAllAsync(
         Expression<Func<TEntity, object>>[]? includes = null,
         CancellationToken cancellationToken = default)
@@ -36,12 +31,40 @@ public class GenericRepository<TEntity, TKey> : IGenericRepository<TEntity, TKey
         return await query.ToListAsync(cancellationToken);
     }
 
+    public async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.FindAsync(new object?[] { id }, cancellationToken);
+    }
+
+    public async Task<TEntity?> GetByIdWithIncludesAsync(
+    TKey id,
+    Expression<Func<TEntity, object>>[]? includes = null,
+    CancellationToken cancellationToken = default)
+    {
+        IQueryable<TEntity> query = _dbSet;
+
+        if (includes is { Length: > 0 })
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
+
+        return await query.FirstOrDefaultAsync(e => e.Id.Equals(id), cancellationToken);
+    }
 
     public async Task<IReadOnlyList<TEntity>> FindAsync(
         Expression<Func<TEntity, bool>> predicate,
+        bool track = false,
         CancellationToken cancellationToken = default)
     {
-        return await _dbSet.Where(predicate).AsNoTracking().ToListAsync(cancellationToken);
+        IQueryable<TEntity> query = _dbSet.Where(predicate);
+
+        if (!track)
+            query = query.AsNoTracking();
+
+        return await query.ToListAsync(cancellationToken);
     }
 
     public Task AddAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -60,5 +83,7 @@ public class GenericRepository<TEntity, TKey> : IGenericRepository<TEntity, TKey
         // Interceptor handles intercepting Remove and converting to Soft Delete
         _dbSet.Remove(entity);
     }
+
+   
 }
 
