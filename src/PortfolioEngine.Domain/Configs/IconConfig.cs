@@ -22,7 +22,6 @@ public static class IconConfig
     new("sliders", "Preferences / Controls"),
 
     // --- Content & Portfolio ---
-    new("code-slash", "Projects / Source Code"),
     new("briefcase", "Experience / Work"),
     new("folder2-open", "Portfolio Showcase"),
     new("terminal", "Skills / Tech Stack"),
@@ -69,7 +68,17 @@ public static class IconConfig
     new("person", "User Profile"),
     new("shield-lock", "Security / Auth"),
     new("key", "API Keys / Access Tokens"),
-    new("trash", "Archive / Cleanup")
+    new("trash", "Archive / Cleanup"),
+
+    // --- backend icons ---
+    new("braces", "braces / backend"),
+
+    // --- devops icons ---
+    new("infinity", "infinity / devops"),
+    new("box-seam", "box seam / container"),
+    
+    // --- frontend icons ---
+    new("code-slash", "Projects / Source Code"),
 };
 
     // Fast lookup HashSet for security validation

@@ -6,14 +6,28 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace PortfolioEngine.Application.Services.Interfaces
+namespace PortfolioEngine.Application.Services.Interfaces;
+
+public interface ISkillService
 {
-    public interface ISkillService
-    {
-        Task<IEnumerable<SkillDto>> GetAllSkillsAsync(Expression<Func<Skill, object>>[]? includes = null, CancellationToken cancellationToken = default);
-        Task<SkillDto?> GetSkillByIdAsync(Guid id, CancellationToken cancellationToken = default);
-        Task<Guid> CreateSkillAsync(CreateSkillDto dto, CancellationToken cancellationToken = default);
-        Task UpdateSkillAsync(Guid id, UpdateSkillDto dto, CancellationToken cancellationToken = default);
-        Task DeleteSkillAsync(Guid id, CancellationToken cancellationToken = default);
-    }
+    Task<IReadOnlyList<SkillDto>> GetAllSkillsAsync(
+        Expression<Func<Skill, object>>[]? includes = null,
+        CancellationToken cancellationToken = default);
+
+    Task<SkillDto?> GetSkillByIdAsync(
+        Guid id,
+        Expression<Func<Skill, object>>[]? includes = null,
+        CancellationToken cancellationToken = default);
+
+    Task<Guid> CreateSkillAsync(
+        CreateSkillDto dto,
+        CancellationToken cancellationToken = default);
+
+    Task UpdateSkillAsync(
+        Guid id, UpdateSkillDto dto,
+        CancellationToken cancellationToken = default);
+
+    Task DeleteSkillAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
 }

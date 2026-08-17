@@ -37,7 +37,7 @@ public class ContactService : IContactService
     public async Task DeleteContactAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var contactRepo = _unitOfWork.Repository<Contact, Guid>();
-        var contact = await contactRepo.GetByIdAsync(id, cancellationToken);
+        var contact = await contactRepo.GetByIdAsync(id, cancellationToken: cancellationToken);
         if (contact != null)
         {
             contactRepo.Delete(contact);
@@ -48,21 +48,21 @@ public class ContactService : IContactService
     public async Task<IEnumerable<ContactDto>> GetAllContactsAsync(Expression<Func<Contact, object>>[]? includes = null, CancellationToken cancellationToken = default)
     {
         var contactRepo = _unitOfWork.Repository<Contact, Guid>();
-        var contacts = await contactRepo.GetAllAsync(includes, cancellationToken);
+        var contacts = await contactRepo.GetAllAsync(includes, cancellationToken: cancellationToken);
         return contacts.Select(c => _mapper.Map<ContactDto>(c));
     }
 
     public async Task<ContactDto> GetContactByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var contactRepo = _unitOfWork.Repository<Contact, Guid>();
-        var contact = await contactRepo.GetByIdAsync(id, cancellationToken);
+        var contact = await contactRepo.GetByIdAsync(id, cancellationToken: cancellationToken);
         return contact == null ? new ContactDto() : _mapper.Map<ContactDto>(contact);
     }
 
     public async Task<IEnumerable<ContactDto>> GetContactByTypeAsync(ContactTypes contactType, CancellationToken cancellationToken = default)
     {
         var contactRepo = _unitOfWork.Repository<Contact, Guid>();
-        var contacts = await contactRepo.GetAllAsync(null, cancellationToken);
+        var contacts = await contactRepo.GetAllAsync(null, cancellationToken: cancellationToken);
         IEnumerable<Contact> filteredContacts = contacts.Where(c => c.ContactType == contactType);
         return filteredContacts == null ? Enumerable.Empty<ContactDto>() : filteredContacts.Select(c => _mapper.Map<ContactDto>(c));
     }
@@ -70,7 +70,7 @@ public class ContactService : IContactService
     public async Task UpdateContactAsync(Guid id, UpdateContactDto dto, CancellationToken cancellationToken = default)
     {
         var contactRepo = _unitOfWork.Repository<Contact, Guid>();
-        var contact = await contactRepo.GetByIdAsync(id, cancellationToken);
+        var contact = await contactRepo.GetByIdAsync(id, cancellationToken: cancellationToken);
 
         if (contact != null)
         {

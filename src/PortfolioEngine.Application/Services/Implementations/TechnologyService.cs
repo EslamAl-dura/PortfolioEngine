@@ -24,14 +24,14 @@ public class TechnologyService : ITechnologyService
     public async Task<IEnumerable<TechnologyDto>> GetAllTechnologiesAsync(Expression<Func<Technology, object>>[]? includes = null, CancellationToken cancellationToken = default)
     {
         var repo = _unitOfWork.Repository<Technology, Guid>();
-        var technologies = await repo.GetAllAsync(includes, cancellationToken);
+        var technologies = await repo.GetAllAsync(includes, cancellationToken: cancellationToken);
         return _mapper.Map<IEnumerable<TechnologyDto>>(technologies);
     }
 
     public async Task<TechnologyDto?> GetTechnologyByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var repo = _unitOfWork.Repository<Technology, Guid>();
-        var tech = await repo.GetByIdAsync(id, cancellationToken);
+        var tech = await repo.GetByIdAsync(id, cancellationToken: cancellationToken);
 
         return tech == null ? null : _mapper.Map<TechnologyDto>(tech);
     }
@@ -51,7 +51,7 @@ public class TechnologyService : ITechnologyService
     public async Task UpdateTechnologyAsync(Guid id, UpdateTechnologyDto dto, CancellationToken cancellationToken = default)
     {
         var techRepo = _unitOfWork.Repository<Technology, Guid>();
-        var entity = await techRepo.GetByIdAsync(id, cancellationToken);
+        var entity = await techRepo.GetByIdAsync(id, cancellationToken: cancellationToken);
 
         if (entity != null)
         {
@@ -64,7 +64,7 @@ public class TechnologyService : ITechnologyService
     public async Task DeleteTechnologyAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var techRepo = _unitOfWork.Repository<Technology, Guid>();
-        var entity = await techRepo.GetByIdAsync(id, cancellationToken);
+        var entity = await techRepo.GetByIdAsync(id, cancellationToken: cancellationToken);
 
         if (entity != null)
         {

@@ -24,7 +24,7 @@ public class TechCategoryService : ITechCategoryService
         var categoryRepo = _unitOfWork.Repository<TechCategory, Guid>();
 
 
-        var categories = await categoryRepo.GetAllAsync(includes ?? null, cancellationToken);
+        var categories = await categoryRepo.GetAllAsync(includes ?? null, cancellationToken: cancellationToken);
 
         return _mapper.Map<IEnumerable<TechCategoryDto>>(categories);
     }
@@ -32,7 +32,7 @@ public class TechCategoryService : ITechCategoryService
     public async Task<TechCategoryDto?> GetCategoryByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var categoryRepo = _unitOfWork.Repository<TechCategory, Guid>();
-        var category = await categoryRepo.GetByIdAsync(id, cancellationToken);
+        var category = await categoryRepo.GetByIdAsync(id, cancellationToken: cancellationToken);
 
         return category == null ? null : _mapper.Map<TechCategoryDto>(category);
     }
@@ -52,7 +52,7 @@ public class TechCategoryService : ITechCategoryService
     public async Task DeleteCategoryAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var categoryRepo = _unitOfWork.Repository<TechCategory, Guid>();
-        var category = await categoryRepo.GetByIdAsync(id, cancellationToken);
+        var category = await categoryRepo.GetByIdAsync(id, cancellationToken: cancellationToken);
 
         if (category != null)
         {
@@ -64,7 +64,7 @@ public class TechCategoryService : ITechCategoryService
     public async Task UpdateCategoryAsync(Guid Id, CreateTechCategoryDto dto, CancellationToken cancellationToken = default)
     {
         var categoryRepo = _unitOfWork.Repository<TechCategory, Guid>();
-        var category = await categoryRepo.GetByIdAsync(Id, cancellationToken);
+        var category = await categoryRepo.GetByIdAsync(Id, cancellationToken: cancellationToken);
 
         if (category != null)
         {

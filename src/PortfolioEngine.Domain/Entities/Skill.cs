@@ -15,5 +15,5 @@ public class Skill : BaseEntity
     public int Proficiency { get; set; } = 0;
     public bool IsSoftSkill { get; set; } = false;
 
-    public ICollection<Technology> Technologies { get; set; } = new List<Technology>();
+    public ICollection<Technology> Technologies { get; set; } = new HashSet<Technology>();
 }
