@@ -41,9 +41,22 @@ public static class ModelBuilderExtensions
 
     public static void ManagingRelationshipsBetweenTables(this ModelBuilder modelBuilder)
     {
+        // set the many to many relationship between skills and technologies
         modelBuilder.Entity<Skill>()
-        .HasMany(s => s.Technologies)
-        .WithMany()                                 // no inverse navigation
-        .UsingEntity(j => j.ToTable("SkillTechnologies"));  // optional but recommended
+        .HasMany(t => t.Technologies)
+        .WithMany()                                
+        .UsingEntity(j => j.ToTable("SkillTechnologies"));
+
+        // set the many to many relationship between projects and skills
+        modelBuilder.Entity<Project>()
+            .HasMany(s => s.Skills)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("ProjectSkills"));
+
+        // set the many to many relationship between projects and Colleagues
+        modelBuilder.Entity<Project>()
+            .HasMany(s => s.Colleagues)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("ProjectColleagues"));
     }
 }

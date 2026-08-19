@@ -34,5 +34,21 @@ public class TechMappingProfile : Profile
             .ForMember(dest => dest.Technologies, opt => opt.Ignore());
         CreateMap<UpdateSkillDto, Skill>()
             .ForMember(dest => dest.Technologies, opt => opt.Ignore());
+
+        // --- Colleague Mappings ---
+        CreateMap<Colleague, ColleagueDto>();
+        CreateMap<CreateColleagueDto, Colleague>();
+        CreateMap<UpdateColleagueDto, Colleague>();
+
+        // --- Project Mappings ---
+        CreateMap<Project, ProjectDto>();
+        CreateMap<Colleague, ColleagueLookupDto>();
+        CreateMap<Skill, SkillLookupDto>();
+        CreateMap<CreateProjectDto, Project>()
+            .ForMember(dest => dest.Colleagues, opt => opt.Ignore())
+            .ForMember(dest => dest.Skills, opt => opt.Ignore());
+        CreateMap<UpdateProjectDto, Project>()
+            .ForMember(dest => dest.Colleagues, opt => opt.Ignore())
+            .ForMember(dest => dest.Skills, opt => opt.Ignore());
     }
 }

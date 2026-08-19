@@ -1,0 +1,146 @@
+﻿@using System.Text.Encodings.Web
+@using System.Text.Json
+@using PortfolioEngine.Application.DTOs
+@model IEnumerable<ProjectDto>
+
+@{
+    ViewData["Title"] = "Projects Management";
+    var colleagues = ViewBag.Colleagues as IEnumerable<ColleagueDto> ?? Enumerable.Empty<ColleagueDto>();
+    var skills = ViewBag.Skills as IEnumerable<SkillDto> ?? Enumerable.Empty<SkillDto>();
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Top Header Bar -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl flex items-center gap-3">
+                <i class="bi bi-folder-fill text-blue-600"></i> Project Portfolio
+            </h1>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                Manage your showcased software applications, client work, and team builds.
+            </p>
+        </div>
+
+        <div>
+            <button type="button"
+                    onclick="openCreateProjectModal()"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition-all">
+                <i class="bi bi-plus-lg"></i>
+                <span>Add Project</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Project List Table -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+                        <th class="px-6 py-4">Title & Slug</th>
+                        <th class="px-6 py-4">Flags</th>
+                        <th class="px-6 py-4">Stack & Team</th>
+                        <th class="px-6 py-4">Timeline</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-800 text-sm text-slate-700 dark:text-slate-300">
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="bi bi-code-slash text-3xl mb-2 text-slate-400"></i>
+                                    <span>No projects found.</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            var colleagueIdsJson = JsonSerializer.Serialize(item.Colleagues.Select(c => c.Id));
+                            var skillIdsJson = JsonSerializer.Serialize(item.Skills.Select(s => s.Id));
+
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors" title="@item.Description">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                        @item.Title
+                                        @if (item.Featured)
+                                        {
+                                            <span class="px-2 py-0.5 text-[10px] bg-amber-100 text-amber-800 rounded-full font-semibold border border-amber-200">Featured</span>
+                                        }
+                                    </div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400 font-mono">/@item.Slug</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span class="px-2 py-0.5 text-[10px] rounded-md font-medium @(item.IsLive ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-600")">
+                                            @(item.IsLive ? "Live" : "Offline")
+                                        </span>
+                                        <span class="px-2 py-0.5 text-[10px] rounded-md font-medium @(item.IsPublic ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800")">
+                                            @(item.IsPublic ? "Public" : "Private")
+                                        </span>
+                                        <span class="px-2 py-0.5 text-[10px] rounded-md font-medium @(item.IsTeamWork ? "bg-indigo-100 text-indigo-800" : "bg-gray-100 text-gray-800")">
+                                            @(item.IsTeamWork ? "Team" : "Solo")
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col gap-1">
+                                        <div class="text-xs text-slate-500">Skills: <strong class="text-slate-800 dark:text-slate-200">@item.Skills.Count</strong></div>
+                                        <div class="text-xs text-slate-500">Team: <strong class="text-slate-800 dark:text-slate-200">@item.Colleagues.Count</strong></div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-xs text-slate-800 dark:text-slate-200 font-medium">
+                                        @item.StartDate.ToString("MMM yyyy") -
+                                        @(item.IsFinished && item.EndDate == default ? item.EndDate.ToLocalTime().ToString("MMM yyyy") : "Ongoing")
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right space-x-1">
+                                    <button type="button"
+                                            class="edit-project-btn px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900"
+                                            data-id="@item.Id"
+                                            data-title="@item.Title"
+                                            data-description="@item.Description"
+                                            data-liveurl="@item.LiveUrl"
+                                            data-githuburl="@item.GithubUrl"
+                                            data-slug="@item.Slug"
+                                            data-finished="@item.IsFinished.ToString().ToLower()"
+                                            data-featured="@item.Featured.ToString().ToLower()"
+                                            data-islive="@item.IsLive.ToString().ToLower()"
+                                            data-ispublic="@item.IsPublic.ToString().ToLower()"
+                                            data-isteamwork="@item.IsTeamWork.ToString().ToLower()"
+                                            data-start="@item.StartDate.ToString("yyyy-MM-dd")"
+                                            data-end="@(item.EndDate.ToLocalTime().ToString("yyyy-MM-dd") ?? "")"
+                                            data-colleagues='@colleagueIdsJson'
+                                            data-skills='@skillIdsJson'>
+                                        <i class="bi bi-pencil mr-1"></i>
+                                    </button>
+
+                                    <button type="button"
+                                            onclick="openDeleteProjectModal('@item.Id', '@JavaScriptEncoder.Default.Encode(item.Title)')"
+                                            class="p-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors">
+                                        <i class="bi bi-trash text-xs"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Unified Modal Partials -->
+<partial name="_ProjectModal" model="new PortfolioEngine.Web.Models.VM.ProjectViewModel()" />
+<partial name="_DeleteProjectModal" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="../Views/Project/Index.cshtml.js" asp-append-version="true"></script>
+}

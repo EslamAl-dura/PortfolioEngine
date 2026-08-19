@@ -1,0 +1,139 @@
+﻿@using System.Text.Encodings.Web
+@using PortfolioEngine.Application.DTOs
+@model IEnumerable<ColleagueDto>
+
+@{
+    ViewData["Title"] = "Colleagues Management";
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Top Header Bar -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl flex items-center gap-3">
+                <i class="bi bi-people-fill text-blue-600"></i> Colleagues & Team
+            </h1>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                Manage team members, colleagues, design partners, and project contributors.
+            </p>
+        </div>
+
+        <div>
+            <button type="button"
+                    onclick="openCreateColleagueModal()"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition-all">
+                <i class="bi bi-plus-lg"></i>
+                <span>Add Colleague</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Colleague List Table Shell -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+                        <th class="px-6 py-4">Avatar</th>
+                        <th class="px-6 py-4">Name & Role</th>
+                        <th class="px-6 py-4">Profile</th>
+                        <th class="px-6 py-4">Timeline</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-800 text-sm text-slate-700 dark:text-slate-300">
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="bi bi-person-badge text-3xl mb-2 text-slate-400"></i>
+                                    <span>No colleagues found.</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden">
+                                        @if (!string.IsNullOrWhiteSpace(item.AvatarUrl))
+                                        {
+                                            <img src="@item.AvatarUrl" alt="@item.Name" class="w-full h-full object-cover" />
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-person text-lg text-slate-400"></i>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-slate-900 dark:text-white">@item.Name</div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">@item.Role</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if (!string.IsNullOrWhiteSpace(item.ProfileUrl))
+                                    {
+                                        <a href="@item.ProfileUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 hover:underline">
+                                            <i class="bi bi-linkedin"></i>
+                                            <span class="max-w-[150px] truncate text-xs">LinkedIn / Web</span>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-xs text-slate-400 italic">None</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-xs text-slate-800 dark:text-slate-200 font-medium">
+                                        @item.StartDate.ToString("dd/MM/yyyy") -
+                                        @(item.UntilNow ? "Present" : item.EndDate.ToString("dd/MM/yyyy"))
+                                    </div>
+                                    @if (item.UntilNow)
+                                    {
+                                        <span class="inline-flex items-center px-2 py-0.5 mt-1 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                            Current Colleague
+                                        </span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right space-x-1">
+                                    <button type="button"
+                                            class="edit-colleague-btn px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900"
+                                            data-id="@item.Id"
+                                            data-name="@item.Name"
+                                            data-role="@item.Role"
+                                            data-profile="@item.ProfileUrl"
+                                            data-avatar="@item.AvatarUrl"
+                                            data-start="@item.StartDate.ToString("yyyy-MM-dd")"
+                                            data-until="@item.UntilNow.ToString().ToLower()"
+                                            data-end="@item.EndDate.ToString("yyyy-MM-dd")">
+                                        <i class="bi bi-pencil mr-1"></i>
+                                    </button>
+
+                                    <button type="button"
+                                            onclick="openDeleteColleagueModal('@item.Id', '@JavaScriptEncoder.Default.Encode(item.Name)')"
+                                            class="p-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors">
+                                        <i class="bi bi-trash text-xs"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Unified Modal Partials -->
+<partial name="_ColleagueModal" />
+<partial name="_DeleteColleagueModal" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="../Views/Colleague/Index.cshtml.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,222 @@
+﻿@model PortfolioEngine.Web.Models.VM.ProjectViewModel
+@{
+    var colleagues = ViewBag.Colleagues as IEnumerable<PortfolioEngine.Application.DTOs.ColleagueDto> ?? Enumerable.Empty<PortfolioEngine.Application.DTOs.ColleagueDto>();
+    var skills = ViewBag.Skills as IEnumerable<PortfolioEngine.Application.DTOs.SkillDto> ?? Enumerable.Empty<PortfolioEngine.Application.DTOs.SkillDto>();
+}
+
+<div id="projectModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200">
+    <div id="projectModalContainer" class="modal-scrollbar bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-2xl max-h-full flex flex-col transform scale-95 transition-transform duration-200 overflow-hidden">
+
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
+            <h3 id="projectModalTitle" class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <i id="projectModalIcon" class="bi bi-folder-plus text-blue-600"></i>
+                <span id="projectModalTitleText">Add Project</span>
+            </h3>
+            <button type="button" onclick="closeProjectModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                <i class="bi bi-x-lg text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Form Wrapper -->
+        <form id="projectForm" method="post" class="flex flex-col min-h-0 flex-1">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="project_Id" name="Id" value="" />
+
+            <!-- Scrollable Body -->
+            <div class="p-6 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
+
+                <div id="projectValidationSummary" class="hidden p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-lg text-xs text-red-600 dark:text-red-400"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Title <span class="text-rose-500">*</span></label>
+                        <input id="project_Title" name="Title" required placeholder="Project Name"
+                               class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Slug</label>
+                        <input id="project_Slug" name="Slug" placeholder="project-slug"
+                               class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Description <span class="text-rose-500">*</span></label>
+                    <textarea id="project_Description" name="Description" rows="3" required placeholder="Detailed project overview..."
+                              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                </div>
+
+                <!-- Toggles Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl">
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                        <input type="checkbox" id="project_IsLive" name="IsLive" value="true" class="rounded text-blue-600" />
+                        <span>Is Live</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                        <input type="checkbox" id="project_IsPublic" name="IsPublic" value="true" class="rounded text-blue-600" />
+                        <span>Is Public</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                        <input type="checkbox" id="project_Featured" name="Featured" value="true" class="rounded text-blue-600" />
+                        <span>Featured</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                        <input type="checkbox" id="project_IsTeamWork" name="IsTeamWork" value="true" class="rounded text-blue-600" />
+                        <span>Teamwork</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                        <input type="checkbox" id="project_IsFinished" name="IsFinished" value="true" class="rounded text-blue-600" />
+                        <span>Is Finished</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="liveUrContainer">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Live URL</label>
+                        <input id="project_LiveUrl" name="LiveUrl" type="url" placeholder="https://..."
+                               class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                    </div>
+                    <div id="githubContainer">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">GitHub URL</label>
+                        <input id="project_GithubUrl" name="GithubUrl" type="url" placeholder="https://github.com/..."
+                               class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                    </div>
+                </div>
+
+                
+
+                <!-- Dates -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Start Date <span class="text-rose-500">*</span></label>
+                        <input id="project_StartDate" name="StartDate" type="date" required
+                               class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                    </div>
+                    <div id="projectEndDateContainer">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">End Date</label>
+                        <input id="project_EndDate" name="EndDate" type="date"
+                               class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                    </div>
+                </div>
+
+               
+                <!-- Dynamic Selection Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+
+                    <!-- Assign Tech Stack / Skills Popover -->
+                    <div id="skillSelectionGroup" class="relative">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
+                            Assign Tech Stack / Skills
+                        </label>
+
+                        <!-- Trigger Button -->
+                        <button type="button"
+                                id="tech-dropdown-btn"
+                                class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+                            <span id="tech-dropdown-label" class="truncate text-slate-400">Select technologies...</span>
+                            <i class="bi bi-chevron-down text-slate-400 text-xs"></i>
+                        </button>
+
+                        <!-- Hidden inputs container for form post -->
+                        <div id="tech-hidden-inputs"></div>
+
+                        <!-- Popover Menu -->
+                        <div id="tech-dropdown-menu"
+                             class="absolute left-0 right-0 z-50 mt-1 hidden max-h-60 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 shadow-xl ring-1 ring-black/5 transition-all">
+
+                            <!-- Search Filter -->
+                            <div class="relative mb-2">
+                                <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                                <input type="text"
+                                       id="tech-search-input"
+                                       placeholder="Search technologies..."
+                                       class="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 py-1.5 pl-8 pr-3 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                            </div>
+
+                            <!-- Options List -->
+                            <div class="max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar" id="tech-options-list">
+                                @foreach (var s in skills)
+                                {
+                                    <label class="tech-option-item flex cursor-pointer items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/70 transition-colors">
+                                        <div class="flex items-center gap-2.5 truncate">
+                                            <input type="checkbox"
+                                                   value="@s.Id"
+                                                   data-label="@s.Name"
+                                                   class="tech-checkbox h-4 w-4 rounded border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-blue-600 focus:ring-blue-500 focus:ring-offset-slate-900" />
+                                            <span class="truncate font-medium">@s.Name</span>
+                                        </div>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assign Colleagues Popover (Hidden dynamically when IsTeamWork is unchecked) -->
+                    <div id="colleagueSelectionGroup" class="relative hidden">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
+                            Assign Colleagues
+                        </label>
+
+                        <!-- Trigger Button -->
+                        <button type="button"
+                                id="colleague-dropdown-btn"
+                                class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+                            <span id="colleague-dropdown-label" class="truncate text-slate-400">Select colleagues...</span>
+                            <i class="bi bi-chevron-down text-slate-400 text-xs"></i>
+                        </button>
+
+                        <!-- Hidden inputs container for form post -->
+                        <div id="colleague-hidden-inputs"></div>
+
+                        <!-- Popover Menu -->
+                        <div id="colleague-dropdown-menu"
+                             class="absolute left-0 right-0 z-50 mt-1 hidden max-h-60 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 shadow-xl ring-1 ring-black/5 transition-all">
+
+                            <!-- Search Filter -->
+                            <div class="relative mb-2">
+                                <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                                <input type="text"
+                                       id="colleague-search-input"
+                                       placeholder="Search colleagues..."
+                                       class="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 py-1.5 pl-8 pr-3 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                            </div>
+
+                            <!-- Options List -->
+                            <div class="max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar" id="colleague-options-list">
+                                @foreach (var c in colleagues)
+                                {
+                                    <label class="colleague-option-item flex cursor-pointer items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/70 transition-colors">
+                                        <div class="flex items-center gap-2.5 truncate">
+                                            <input type="checkbox"
+                                                   value="@c.Id"
+                                                   data-label="@c.Name (@c.Role)"
+                                                   class="colleague-checkbox h-4 w-4 rounded border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-blue-600 focus:ring-blue-500 focus:ring-offset-slate-900" />
+                                            <span class="truncate font-medium">@c.Name <span class="text-slate-400 font-normal">(@c.Role)</span></span>
+                                        </div>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    
+
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex justify-end gap-3 shrink-0">
+                <button type="button" onclick="closeProjectModal()"
+                        class="px-5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-all">
+                    Cancel
+                </button>
+                <button type="submit" id="projectSubmitBtn"
+                        class="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition-all">
+                    Create Project
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
