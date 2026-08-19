@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<ISkillService, SkillService>();
         services.AddScoped<IColleagueService, ColleagueService>();
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IMessageService, MessageService>();
 
         return services;
     }

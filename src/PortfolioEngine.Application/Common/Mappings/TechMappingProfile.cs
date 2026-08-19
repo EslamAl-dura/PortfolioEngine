@@ -50,5 +50,10 @@ public class TechMappingProfile : Profile
         CreateMap<UpdateProjectDto, Project>()
             .ForMember(dest => dest.Colleagues, opt => opt.Ignore())
             .ForMember(dest => dest.Skills, opt => opt.Ignore());
+
+        // --- Messages Mapping
+        CreateMap<Message, MessageDto>();
+        // If I ever need DTO -> Entity mapping:
+        // CreateMap<MessageDto, Message>();
     }
 }

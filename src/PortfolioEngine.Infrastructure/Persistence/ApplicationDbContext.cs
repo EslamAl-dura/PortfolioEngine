@@ -31,6 +31,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     /// Gets or sets the DbSet for Skill entities.
     /// </summary>
     public DbSet<Skill> Skills { get; set; }
+    /// <summary>
+    /// Gets or sets the dbset for messages entities
+    /// </summary>
+    public DbSet<Message> Messages{ get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
